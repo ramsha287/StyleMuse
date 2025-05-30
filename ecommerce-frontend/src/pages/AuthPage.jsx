@@ -8,8 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-// Configure axios defaults
-axios.defaults.baseURL = 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -48,7 +47,7 @@ const AuthPage = () => {
     setSuccess('');
 
     try {
-      const response = await axios.post("/api/auth/login", {
+      const response = await axios.post("${API_URL}/api/auth/login", {
         email: formData.email.trim(),
         password: formData.password
       });
@@ -82,7 +81,7 @@ const AuthPage = () => {
     }
 
     try {
-      await axios.post("/api/auth/register", formData);
+      await axios.post("${API_URL}/api/auth/register", formData);
       toast.success("Registered successfully! Please login.");
       setIsLogin(true);
     } catch (err) {
@@ -96,7 +95,7 @@ const AuthPage = () => {
     setSuccess('');
     
     try {
-        const response = await axios.post("/api/auth/forgot-password", { email: forgotEmail });
+        const response = await axios.post("${API_URL}/api/auth/forgot-password", { email: forgotEmail });
         toast.success(response.data.message || 'Password reset instructions have been sent to your email.');
         setShowForgot(false);
     } catch (err) {
@@ -125,7 +124,7 @@ const AuthPage = () => {
     }
 
     try {
-        const response = await axios.patch(`/api/auth/reset-password/${resetToken}`, {
+        const response = await axios.patch(`${API_URL}/api/auth/reset-password/${resetToken}`, {
             newPassword
         });
 

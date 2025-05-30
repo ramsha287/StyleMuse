@@ -3,6 +3,8 @@ import axios from 'axios';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const AdminManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +14,7 @@ const AdminManageUsers = () => {
   const fetchUsers = async () => {
     const token = localStorage.getItem('token');
     try {
-      const res = await axios.get('/api/users', {
+      const res = await axios.get('${API_URL}/api/users', {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log('Fetched Users:', res.data.users);
@@ -29,8 +31,8 @@ const AdminManageUsers = () => {
   const toggleUserStatus = async (id, currentStatus) => {
     const token = localStorage.getItem('token');
     const endpoint = currentStatus 
-      ? `/api/users/${id}/deactivate` 
-      : `/api/users/${id}/reactivate`;
+      ? `${API_URL}/api/users/${id}/deactivate` 
+      : `${API_URL}/api/users/${id}/reactivate`;
   
     try {
       await axios.put(endpoint, {}, {

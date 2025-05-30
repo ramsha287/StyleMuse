@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",

@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 // Configure axios defaults
-axios.defaults.baseURL = 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -68,7 +68,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await axios.patch(`/api/auth/reset-password/${token}`, {
+      const response = await axios.patch(`${API_URL}/api/auth/reset-password/${token}`, {
         newPassword
       });
 

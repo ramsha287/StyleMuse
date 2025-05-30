@@ -6,6 +6,8 @@ import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const CartPage = () => {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +19,7 @@ const CartPage = () => {
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const response = await axios.get('/api/cart/', {
+        const response = await axios.get('${API_URL}/api/cart/', {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -46,7 +48,7 @@ const CartPage = () => {
   // Update item quantity in cart
   const updateCartItem = async (productId, quantity, size) => {
     try {
-      const response = await axios.patch('/api/cart/items', 
+      const response = await axios.patch('${API_URL}/api/cart/items', 
         { productId, quantity, size }, 
         {
           headers: {
@@ -72,7 +74,7 @@ const CartPage = () => {
   // Remove item from cart
   const removeCartItem = async (productId) => {
     try {
-      const response = await axios.delete(`/api/cart/items/${productId}`, {
+      const response = await axios.delete(`${API_URL}/api/cart/items/${productId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
