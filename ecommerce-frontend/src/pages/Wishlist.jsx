@@ -98,7 +98,6 @@ const Wishlist = () => {
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
           <p className="text-xl text-stone">Login to continue...</p>
-          toast.error(error);
         </div>
         <Footer />
       </div>
