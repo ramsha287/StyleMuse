@@ -141,7 +141,7 @@ export default function AdminManageProducts() {
         formData.append('video', selectedVideo);
       }
 
-      const response = await axios.post('/api/products', formData, {
+      const response = await axios.post('${API_URL}/api/products', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -191,7 +191,7 @@ export default function AdminManageProducts() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        '/api/categories',
+        '${API_URL}/api/categories',
         { name: newCategory },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -212,7 +212,7 @@ export default function AdminManageProducts() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        '/api/brands',
+        '${API_URL}/api/brands',
         { name: newBrand },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -230,7 +230,7 @@ export default function AdminManageProducts() {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`/api/products/${id}`, {
+      await axios.delete(`${API_URL}/api/products/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Product deleted successfully');
@@ -246,7 +246,7 @@ export default function AdminManageProducts() {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`/api/categories/${id}`, {
+      await axios.delete(`${API_URL}/api/categories/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Category deleted successfully');
@@ -297,7 +297,7 @@ export default function AdminManageProducts() {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`/api/brands/${id}`, {
+      await axios.delete(`${API_URL}/api/brands/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Brand deleted successfully');
