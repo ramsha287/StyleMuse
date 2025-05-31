@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import bgImage from "../assets/wallpaperwebsite.png";
 
 const API_URL = process.env.REACT_APP_API_URL;
+console.log('API_URL:', API_URL);
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -56,7 +57,9 @@ const Home = () => {
               <div key={prod._id} className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition flex flex-col">
                 <div className="h-64 w-full flex items-center justify-center bg-gray-50">
                   <img
-                    src={prod.images && prod.images.length > 0 ? `${API_URL}/uploads/${prod.images[0]}` : "https://via.placeholder.com/400x300"}
+                    src={prod.images && prod.images.length > 0 
+                      ? `${API_URL.replace(/^http:/, 'https:')}/uploads/${prod.images[0]}` 
+                      : "https://via.placeholder.com/400x300"}
                     alt={prod.name}
                     className="h-full w-full object-contain p-4"
                   />
