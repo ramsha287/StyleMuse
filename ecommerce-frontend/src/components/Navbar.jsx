@@ -6,6 +6,13 @@ import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
+// Cache for storing categories
+const categoryCache = {
+  categories: null,
+  lastFetched: null,
+  CACHE_DURATION: 5 * 60 * 1000, // 5 minutes in milliseconds
+};
+
 const Navbar = () => {
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -13,27 +20,46 @@ const Navbar = () => {
   const [user, setUser] = useState(null);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
-
-
 
   // Fetch categories
   useEffect(() => {
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/categories`);
-      const data = response.data;
-      setCategories(data.categories || []);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchCategories = async () => {
+      try {
+        // Check if we have a valid cached response
+        const now = Date.now();
+        if (categoryCache.categories && categoryCache.lastFetched && 
+            (now - categoryCache.lastFetched < categoryCache.CACHE_DURATION)) {
+          setCategories(categoryCache.categories);
+          setLoading(false);
+          return;
+        }
 
-  fetchCategories();
-}, []);
+        const response = await axios.get(`${API_URL}/api/categories`);
+        const data = response.data;
+        const categoriesData = data.categories || [];
+        
+        // Update cache
+        categoryCache.categories = categoriesData;
+        categoryCache.lastFetched = now;
+        
+        setCategories(categoriesData);
+        setError(null);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        setError('Failed to load categories');
+        // If we have cached data, use it as fallback
+        if (categoryCache.categories) {
+          setCategories(categoryCache.categories);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchCategories();
+  }, []);
 
   // Check login status on mount
   useEffect(() => {

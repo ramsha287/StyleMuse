@@ -7,9 +7,16 @@ import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
+// Cache for storing API responses
+const cache = {
+  products: null,
+  lastFetched: null,
+  CACHE_DURATION: 5 * 60 * 1000, // 5 minutes in milliseconds
+};
 
 const Home = () => {
   const [products, setProducts] = useState([]);
+  const [error, setError] = useState(null);
 
   // Function to truncate text
   const truncateText = (text, maxLength = 100) => {
@@ -19,17 +26,39 @@ const Home = () => {
   };
 
   useEffect(() => {
-  axios.get(`${API_URL}/api/products`)
-    .then((res) => {
-      const data = res.data;
-      setProducts(
-        Array.isArray(data.products)
+    const fetchProducts = async () => {
+      try {
+        // Check if we have a valid cached response
+        const now = Date.now();
+        if (cache.products && cache.lastFetched && (now - cache.lastFetched < cache.CACHE_DURATION)) {
+          setProducts(cache.products);
+          return;
+        }
+
+        const response = await axios.get(`${API_URL}/api/products`);
+        const data = response.data;
+        const processedProducts = Array.isArray(data.products)
           ? data.products.slice(0, 3)
-          : (Array.isArray(data) ? data.slice(0, 3) : [])
-      );
-    })
-    .catch((err) => console.error("Failed to fetch products:", err));
-}, []);
+          : (Array.isArray(data) ? data.slice(0, 3) : []);
+
+        // Update cache
+        cache.products = processedProducts;
+        cache.lastFetched = now;
+        
+        setProducts(processedProducts);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+        setError("Failed to load products. Please try again later.");
+        // If we have cached data, use it as fallback
+        if (cache.products) {
+          setProducts(cache.products);
+        }
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
@@ -62,8 +91,8 @@ const Home = () => {
               <div key={prod._id} className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition flex flex-col">
                 <div className="h-64 w-full flex items-center justify-center bg-gray-50">
                   <img
-                    src={prod.images && prod.images.length > 0 
-                      ? `${API_URL}/uploads/${prod.images[0]}` 
+                    src={prod.images && prod.images.length > 0
+                      ? `${API_URL}/uploads/${prod.images[0]}`
                       : "https://via.placeholder.com/400x300"}
                     alt={prod.name}
                     className="h-full w-full object-contain p-4"
