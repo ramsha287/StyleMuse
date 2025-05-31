@@ -47,7 +47,7 @@ const AuthPage = () => {
     setSuccess('');
 
     try {
-      const response = await axios.post("${API_URL}/api/auth/login", {
+      const response = await axios.post(`${API_URL}/api/auth/login`, {
         email: formData.email.trim(),
         password: formData.password
       });
@@ -81,7 +81,7 @@ const AuthPage = () => {
     }
 
     try {
-      await axios.post("${API_URL}/api/auth/register", formData);
+      await axios.post(`${API_URL}/api/auth/register`, formData);
       toast.success("Registered successfully! Please login.");
       setIsLogin(true);
     } catch (err) {
@@ -95,7 +95,7 @@ const AuthPage = () => {
     setSuccess('');
     
     try {
-        const response = await axios.post("${API_URL}/api/auth/forgot-password", { email: forgotEmail });
+        const response = await axios.post(`${API_URL}/api/auth/forgot-password`, { email: forgotEmail });
         toast.success(response.data.message || 'Password reset instructions have been sent to your email.');
         setShowForgot(false);
     } catch (err) {

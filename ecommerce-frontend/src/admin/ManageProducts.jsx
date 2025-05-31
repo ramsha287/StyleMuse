@@ -55,7 +55,7 @@ export default function AdminManageProducts() {
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('${API_URL}/api/products', {
+      const res = await axios.get(`${API_URL}/api/products`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const productArray = Array.isArray(res.data) ? res.data : res.data.products || [];
@@ -69,7 +69,7 @@ export default function AdminManageProducts() {
 
   const fetchCategories = async () => {
     try {
-      const { data } = await axios.get('${API_URL}/api/categories');
+      const { data } = await axios.get(`${API_URL}/api/categories`);
       // Use data.categories if it exists, otherwise fallback to an empty array
       setCategories(Array.isArray(data.categories) ? data.categories : []);
     } catch (err) {
@@ -79,7 +79,7 @@ export default function AdminManageProducts() {
 
   const fetchBrands = async () => {
     try {
-      const { data } = await axios.get('${API_URL}/api/brands');
+      const { data } = await axios.get(`${API_URL}/api/brands`);
       setBrands(Array.isArray(data.brands) ? data.brands : []);
     } catch (err) {
       console.error('Error fetching brands:', err);
@@ -141,7 +141,7 @@ export default function AdminManageProducts() {
         formData.append('video', selectedVideo);
       }
 
-      const response = await axios.post('${API_URL}/api/products', formData, {
+      const response = await axios.post(`${API_URL}/api/products`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -191,7 +191,7 @@ export default function AdminManageProducts() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        '${API_URL}/api/categories',
+        `${API_URL}/api/categories`,
         { name: newCategory },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -212,7 +212,7 @@ export default function AdminManageProducts() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        '${API_URL}/api/brands',
+        `${API_URL}/api/brands`,
         { name: newBrand },
         { headers: { Authorization: `Bearer ${token}` } }
       );

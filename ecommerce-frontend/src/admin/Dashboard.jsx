@@ -19,7 +19,7 @@ const AdminDashboard = () => {
   const fetchSummary = async () => {
     const token = localStorage.getItem('token');
     try {
-      const res = await axios.get('${API_URL}/api/summary', {
+      const res = await axios.get(`${API_URL}/api/summary`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSummary(res.data);

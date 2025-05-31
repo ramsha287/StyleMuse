@@ -19,7 +19,7 @@ const CartPage = () => {
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const response = await axios.get('${API_URL}/api/cart/', {
+        const response = await axios.get(`${API_URL}/api/cart/`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -48,7 +48,7 @@ const CartPage = () => {
   // Update item quantity in cart
   const updateCartItem = async (productId, quantity, size) => {
     try {
-      const response = await axios.patch('${API_URL}/api/cart/items', 
+      const response = await axios.patch(`${API_URL}/api/cart/items`, 
         { productId, quantity, size }, 
         {
           headers: {
@@ -97,7 +97,7 @@ const CartPage = () => {
   // Clear the cart
   const clearCart = async () => {
     try {
-      await axios.delete('${API_URL}/api/cart', {
+      await axios.delete(`${API_URL}/api/cart`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

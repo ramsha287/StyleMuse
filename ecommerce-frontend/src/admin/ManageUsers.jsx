@@ -14,7 +14,7 @@ const AdminManageUsers = () => {
   const fetchUsers = async () => {
     const token = localStorage.getItem('token');
     try {
-      const res = await axios.get('${API_URL}/api/users', {
+      const res = await axios.get(`${API_URL}/api/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log('Fetched Users:', res.data.users);
