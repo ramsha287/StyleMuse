@@ -97,7 +97,7 @@ const CartPage = () => {
   // Clear the cart
   const clearCart = async () => {
     try {
-      await axios.delete('/api/cart', {
+      await axios.delete('${API_URL}/api/cart', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
