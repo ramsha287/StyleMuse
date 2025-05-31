@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
 import bgImage from "../assets/wallpaperwebsite.png";
+import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
 console.log('API_URL:', API_URL);
@@ -18,12 +19,16 @@ const Home = () => {
   };
 
   useEffect(() => {
-    fetch(`${API_URL}/api/products`)
-      .then((res) => res.json())
-      .then((data) => {
-        // If your backend returns {products: [...]}
-        setProducts(Array.isArray(data.products) ? data.products.slice(0, 3) : (Array.isArray(data) ? data.slice(0, 3) : []));
-      });
+    axios.get(`${API_URL}/api/products`)
+      .then((res) => {
+        const data = res.data;
+        setProducts(
+          Array.isArray(data.products)
+            ? data.products.slice(0, 3)
+            : (Array.isArray(data) ? data.slice(0, 3) : [])
+        );
+      })
+      .catch((err) => console.error("Failed to fetch products:", err));
   }, []);
 
   return (
@@ -57,8 +62,8 @@ const Home = () => {
               <div key={prod._id} className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition flex flex-col">
                 <div className="h-64 w-full flex items-center justify-center bg-gray-50">
                   <img
-                    src={prod.images && prod.images.length > 0 
-                      ? `${API_URL}/uploads/${prod.images[0]}` 
+                    src={prod.images && prod.images.length > 0
+                      ? `${API_URL}/uploads/${prod.images[0]}`
                       : "https://via.placeholder.com/400x300"}
                     alt={prod.name}
                     className="h-full w-full object-contain p-4"
