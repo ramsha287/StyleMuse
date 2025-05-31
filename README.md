@@ -34,7 +34,6 @@ A full-stack e-commerce platform built with the MERN stack (MongoDB, Express.js,
 
 - **Modern UI/UX**
   - Responsive design
-  - Dark/Light mode
   - Smooth animations
   - Instagram-style product gallery
 
