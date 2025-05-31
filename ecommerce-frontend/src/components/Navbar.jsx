@@ -6,17 +6,6 @@ import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-// Cache for storing categories
-const categoryCache = {
-  categories: null,
-  lastFetched: null,
-  CACHE_DURATION: 30 * 60 * 1000, // 30 minutes in milliseconds
-};
-
-// Retry configuration
-const MAX_RETRIES = 3;
-const INITIAL_RETRY_DELAY = 1000; // 1 second
-
 const Navbar = () => {
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -24,57 +13,27 @@ const Navbar = () => {
   const [user, setUser] = useState(null);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch categories with retry logic
+
+
+  // Fetch categories
   useEffect(() => {
-    const fetchCategories = async (retryCount = 0) => {
-      try {
-        // Check if we have a valid cached response
-        const now = Date.now();
-        if (categoryCache.categories && categoryCache.lastFetched && 
-            (now - categoryCache.lastFetched < categoryCache.CACHE_DURATION)) {
-          setCategories(categoryCache.categories);
-          setLoading(false);
-          return;
-        }
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/categories`);
+      const data = response.data;
+      setCategories(data.categories || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        const response = await axios.get(`${API_URL}/api/categories`);
-        const data = response.data;
-        const categoriesData = data.categories || [];
-        
-        // Update cache
-        categoryCache.categories = categoriesData;
-        categoryCache.lastFetched = now;
-        
-        setCategories(categoriesData);
-        setError(null);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-        
-        // Implement retry logic for rate limiting errors
-        if (error.response?.status === 429 && retryCount < MAX_RETRIES) {
-          const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
-          console.log(`Retrying in ${delay}ms... (Attempt ${retryCount + 1}/${MAX_RETRIES})`);
-          setTimeout(() => fetchCategories(retryCount + 1), delay);
-          return;
-        }
+  fetchCategories();
+}, []);
 
-        setError('Failed to load categories');
-        // If we have cached data, use it as fallback
-        if (categoryCache.categories) {
-          setCategories(categoryCache.categories);
-        }
-      } finally {
-        if (retryCount === 0) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchCategories();
-  }, []);
 
   // Check login status on mount
   useEffect(() => {

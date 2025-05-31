@@ -7,20 +7,9 @@ import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-// Cache for storing API responses
-const cache = {
-  products: null,
-  lastFetched: null,
-  CACHE_DURATION: 30 * 60 * 1000, // 30 minutes in milliseconds
-};
-
-// Retry configuration
-const MAX_RETRIES = 3;
-const INITIAL_RETRY_DELAY = 1000; // 1 second
 
 const Home = () => {
   const [products, setProducts] = useState([]);
-  const [error, setError] = useState(null);
 
   // Function to truncate text
   const truncateText = (text, maxLength = 100) => {
@@ -30,47 +19,16 @@ const Home = () => {
   };
 
   useEffect(() => {
-    const fetchProducts = async (retryCount = 0) => {
-      try {
-        // Check if we have a valid cached response
-        const now = Date.now();
-        if (cache.products && cache.lastFetched && (now - cache.lastFetched < cache.CACHE_DURATION)) {
-          setProducts(cache.products);
-          return;
-        }
-
-        const response = await axios.get(`${API_URL}/api/products`);
-        const data = response.data;
-        const processedProducts = Array.isArray(data.products)
-          ? data.products.slice(0, 3)
-          : (Array.isArray(data) ? data.slice(0, 3) : []);
-
-        // Update cache
-        cache.products = processedProducts;
-        cache.lastFetched = now;
-        
-        setProducts(processedProducts);
-        setError(null);
-      } catch (err) {
-        console.error("Failed to fetch products:", err);
-        
-        // Implement retry logic for rate limiting errors
-        if (err.response?.status === 429 && retryCount < MAX_RETRIES) {
-          const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
-          console.log(`Retrying in ${delay}ms... (Attempt ${retryCount + 1}/${MAX_RETRIES})`);
-          setTimeout(() => fetchProducts(retryCount + 1), delay);
-          return;
-        }
-
-        setError("Failed to load products. Please try again later.");
-        // If we have cached data, use it as fallback
-        if (cache.products) {
-          setProducts(cache.products);
-        }
-      }
-    };
-
-    fetchProducts();
+    axios.get(`${API_URL}/api/products`)
+      .then((res) => {
+        const data = res.data;
+        setProducts(
+          Array.isArray(data.products)
+            ? data.products.slice(0, 3)
+            : (Array.isArray(data) ? data.slice(0, 3) : [])
+        );
+      })
+      .catch((err) => console.error("Failed to fetch products:", err));
   }, []);
 
   return (
