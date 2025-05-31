@@ -11,8 +11,12 @@ const API_URL = process.env.REACT_APP_API_URL;
 const cache = {
   products: null,
   lastFetched: null,
-  CACHE_DURATION: 5 * 60 * 1000, // 5 minutes in milliseconds
+  CACHE_DURATION: 30 * 60 * 1000, // 30 minutes in milliseconds
 };
+
+// Retry configuration
+const MAX_RETRIES = 3;
+const INITIAL_RETRY_DELAY = 1000; // 1 second
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -26,7 +30,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProducts = async (retryCount = 0) => {
       try {
         // Check if we have a valid cached response
         const now = Date.now();
@@ -49,6 +53,15 @@ const Home = () => {
         setError(null);
       } catch (err) {
         console.error("Failed to fetch products:", err);
+        
+        // Implement retry logic for rate limiting errors
+        if (err.response?.status === 429 && retryCount < MAX_RETRIES) {
+          const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
+          console.log(`Retrying in ${delay}ms... (Attempt ${retryCount + 1}/${MAX_RETRIES})`);
+          setTimeout(() => fetchProducts(retryCount + 1), delay);
+          return;
+        }
+
         setError("Failed to load products. Please try again later.");
         // If we have cached data, use it as fallback
         if (cache.products) {

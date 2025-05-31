@@ -10,8 +10,12 @@ const API_URL = process.env.REACT_APP_API_URL;
 const categoryCache = {
   categories: null,
   lastFetched: null,
-  CACHE_DURATION: 5 * 60 * 1000, // 5 minutes in milliseconds
+  CACHE_DURATION: 30 * 60 * 1000, // 30 minutes in milliseconds
 };
+
+// Retry configuration
+const MAX_RETRIES = 3;
+const INITIAL_RETRY_DELAY = 1000; // 1 second
 
 const Navbar = () => {
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
@@ -23,9 +27,9 @@ const Navbar = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch categories
+  // Fetch categories with retry logic
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchCategories = async (retryCount = 0) => {
       try {
         // Check if we have a valid cached response
         const now = Date.now();
@@ -48,13 +52,24 @@ const Navbar = () => {
         setError(null);
       } catch (error) {
         console.error('Error fetching categories:', error);
+        
+        // Implement retry logic for rate limiting errors
+        if (error.response?.status === 429 && retryCount < MAX_RETRIES) {
+          const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount);
+          console.log(`Retrying in ${delay}ms... (Attempt ${retryCount + 1}/${MAX_RETRIES})`);
+          setTimeout(() => fetchCategories(retryCount + 1), delay);
+          return;
+        }
+
         setError('Failed to load categories');
         // If we have cached data, use it as fallback
         if (categoryCache.categories) {
           setCategories(categoryCache.categories);
         }
       } finally {
-        setLoading(false);
+        if (retryCount === 0) {
+          setLoading(false);
+        }
       }
     };
 
