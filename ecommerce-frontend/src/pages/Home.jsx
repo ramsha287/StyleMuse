@@ -19,7 +19,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    axios.get(`${API_URL}/api/products`)
+    axios.get(`/api/products`)
       .then((res) => {
         const data = res.data;
         setProducts(

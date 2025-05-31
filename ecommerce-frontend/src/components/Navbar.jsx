@@ -21,7 +21,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/categories`);
+        const response = await axios.get(`/api/categories`);
         const data = response.data;
         setCategories(data.categories || []);
       } catch (error) {
