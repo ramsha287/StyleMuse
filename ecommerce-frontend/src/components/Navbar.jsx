@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaHeart, FaBars, FaTimes, FaUser } from "react-icons/fa";
 import logo from "../assets/logo1.png";
-import api from "../utils/api";
+import axios from "axios";
+
+const API_URL = process.env.REACT_APP_API_URL;
 
 const Navbar = () => {
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
@@ -13,22 +15,25 @@ const Navbar = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+
+
   // Fetch categories
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await api.get('/api/categories');
-        const data = response.data;
-        setCategories(data.categories || []);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/categories`);
+      const data = response.data;
+      setCategories(data.categories || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchCategories();
-  }, []);
+  fetchCategories();
+}, []);
+
 
   // Check login status on mount
   useEffect(() => {
