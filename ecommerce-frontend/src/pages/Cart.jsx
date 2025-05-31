@@ -138,7 +138,8 @@ const CartPage = () => {
       <div className="min-h-screen bg-gray-100 flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-xl text-red-500">{error}</p>
+          <p className="text-xl text-stone">login to continue...</p>
+          toast.error(error);
         </div>
         <Footer />
       </div>
